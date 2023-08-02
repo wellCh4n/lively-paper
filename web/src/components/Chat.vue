@@ -1,0 +1,120 @@
+<script setup>
+import { reactive, onMounted, ref, watch } from 'vue'
+import { Position } from '@element-plus/icons-vue'
+import Record from '@/components/record/Record.vue'
+
+const props = defineProps({
+  record: {
+    type: Object,
+    required: false
+  }
+})
+
+const emit = defineEmits(['new-chat'])
+
+const recordsView = ref()
+const form = reactive({
+  prompt: ''
+})
+const records = ref([])
+
+const submit = () => {
+  if (form.prompt === '') {
+    return
+  }
+  const prompt = form.prompt
+  if (!props.record.id) {
+    emit('new-chat', prompt)
+  }
+  if (records.value.length === 0) {
+    props.record.title = prompt
+  }
+  records.value.push({
+    question: prompt,
+    answer: '',
+    answerCallback: async (answer, setAnswer) => {
+      const response = await fetch('http://127.0.0.1:8000/chat', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            query: prompt,
+            mode: "streaming"
+        })
+      })
+      const reader = response.body.getReader()
+      while(true) {
+        const { done, value } = await reader.read()
+        if (done) {
+          break
+        }
+        const word = new TextDecoder().decode(value)
+        answer += word
+        setAnswer(answer)
+      }
+    }
+  })
+  form.prompt = ''
+}
+
+const recordsViewToBottom = () => {
+  const height = recordsView.value.wrapRef.scrollHeight
+  recordsView.value.setScrollTop(height)
+}
+
+onMounted(() => {
+  recordsViewToBottom()
+})
+
+watch(() => props.record.id, (current, prev) => {
+  console.log(current)
+  if (current === prev) {
+    return true
+  }
+  // 切换record
+  if (current !== prev && prev) {
+    records.value = []
+  }
+  return true
+})
+
+watch(() => records.value.length, () => {
+  recordsViewToBottom()
+})
+
+</script>
+
+<template>
+  <div style="display: flex; flex-direction: column-reverse; width: 100%; position: relative; margin: 0 1rem">
+    <el-scrollbar style="width: 100%; margin-top: 1rem; margin-bottom: 100px" ref="recordsView">
+      <Record v-for="item in records"
+              :key="item.question"
+              :question="item.question"
+              :answer="item.answer"
+              :answerCallback="item.answerCallback"
+      />
+    </el-scrollbar>
+    <div style="width: 100%; justify-content: center; text-align: center; height: 60px; line-height: 60px; border-bottom: 1px solid var(--el-border-color);">
+      {{ record.title ? record.title : '跃然纸上' }}
+    </div>
+
+    <el-form @submit.native.prevent
+             @submit="submit"
+             :model="form"
+             style="width: 100%; position: absolute; bottom: 20px; boxShadow: var(--el-box-shadow)"
+    >
+      <el-form-item style="margin-bottom: 0;">
+        <el-input autofocus
+                  v-model="form.prompt"
+                  style="height: 50px;">
+          <template #append>
+            <el-button :icon="Position" />
+          </template>
+        </el-input>
+      </el-form-item>
+    </el-form>
+  </div>
+
+</template>
+
+<style scoped>
+</style>

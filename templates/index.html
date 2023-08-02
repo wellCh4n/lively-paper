@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lively Paper - 跃然纸上</title>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js",
+                "vue-router" : "https://cdn.bootcdn.net/ajax/libs/vue-router/4.1.6/vue-router.esm-browser.js",
+                "@vue/devtools-api": "https://unpkg.com/@vue/devtools-api@6.5.0/lib/esm/index.js"
+            }
+        }
+
+    </script>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+{% verbatim %}
+<div id="app" v-cloak>
+    <router-view></router-view>
+</div>
+
+<script type="module">
+    import {createApp} from 'vue'
+    import {createRouter, createWebHashHistory} from 'vue-router'
+
+    const app = createApp({
+        setup() {
+            const message = 'Hello Vue!'
+            return {
+                message
+            }
+        }
+    });
+
+    const routes = [
+        { path: '/', component: import ('./page/index.js') }
+    ]
+    const router = createRouter({
+        history: createWebHashHistory(),
+        routes,
+    })
+    app.use(router)
+    app.mount('#app')
+</script>
+{% endverbatim %}
+</body>
+</html>
