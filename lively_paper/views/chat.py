@@ -2,7 +2,7 @@ import json
 from queue import SimpleQueue
 from threading import Thread
 
-from django.http import HttpRequest, StreamingHttpResponse, HttpResponseBase, JsonResponse, HttpResponse
+from django.http import HttpRequest, StreamingHttpResponse, HttpResponseBase, HttpResponse
 from django.views.decorators.http import require_POST, require_GET
 from langchain.callbacks import StreamingStdOutCallbackHandler
 from langchain.chains import RetrievalQA
@@ -20,7 +20,10 @@ def chat(request: HttpRequest) -> HttpResponseBase:
     mode: str = data.get('mode', 'streaming')
 
     if mode == 'streaming':
-        qa = RetrievalQA.from_chain_type(llm=openai, chain_type="stuff", retriever=vectorStore.as_retriever(),
+        qa = RetrievalQA.from_chain_type(llm=openai, chain_type="stuff",
+                                         retriever=vectorStore.as_retriever(search_type='similarity_score_threshold',
+                                                                            search_kwargs={'score_threshold': 0.005,
+                                                                                           'k': 5}),
                                          return_source_documents=True)
         queue = SimpleQueue()
         callback = ResponseCallback(queue)
@@ -32,7 +35,7 @@ def chat(request: HttpRequest) -> HttpResponseBase:
             while True:
                 next_token = queue.get(block=True)
                 if next_token is job_done:
-                    yield '\n\n'
+                    yield '\r\n'
                     for document in callback.documents:
                         yield f'——《{document.metadata["source"]}》第 {str(document.metadata["page"])} 页\n'
                     break
