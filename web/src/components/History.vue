@@ -7,22 +7,16 @@ const emit = defineEmits(['click-history', 'new-chat'])
 
 const histories = ref([])
 
-const historyClick = (item) => {
+const onClickHistory = (item) => {
   emit('click-history', item)
 }
-const addHistory = (id, title) => {
-  const item = {
-    id: id,
-    title: title
-  }
+const addHistory = (item) => {
   histories.value.push(item)
-  historyClick(item)
 }
 
 defineExpose({
   addHistory
 })
-
 </script>
 
 <template>
@@ -31,12 +25,12 @@ defineExpose({
                :icon="Plus"
                size="large"
                style="width: 300px;"
-               @click="addHistory(new Date().getTime(), 'New Chat')"
+               @click="emit('new-chat', 'New Chat')"
     >
       New Chat
     </el-button>
     <el-scrollbar style="width: 300px;">
-      <HistoryItem @click="historyClick(item)" :title="item.title" v-for="item in histories" :key="item.id" class="scrollbar-demo-item">{{ item.title }}</HistoryItem>
+      <HistoryItem @click="onClickHistory(item)" :title="item.title" v-for="item in histories" :key="item.id" class="scrollbar-demo-item">{{ item.title }}</HistoryItem>
     </el-scrollbar>
   </div>
 </template>

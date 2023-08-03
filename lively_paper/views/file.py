@@ -26,8 +26,9 @@ def upload(request: HttpRequest) -> HttpResponse:
     )
 
     documents = text_splitter.split_documents(pages)
-    stores.vectorStore.add_documents(documents)
+    stores.vector_store.add_documents(documents)
     return HttpResponse('保存成功')
+
 
 @require_GET
 def list() -> HttpResponse:

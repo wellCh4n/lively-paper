@@ -1,18 +1,29 @@
 <script setup>
-import { ref } from "vue"
-import Chat from "@/components/Chat.vue";
-import History from "@/components/History.vue";
+import {onMounted, ref} from "vue"
+import Chat from "@/components/Chat.vue"
+import History from "@/components/History.vue"
 import Repository from "@/components/Repository.vue"
+import { postData } from '@/utils/request'
 
-const record = ref({})
 const historyRef = ref()
+const chatRef = ref()
 const clickHistory = (item) => {
-  record.value = item
+  chatRef.value.onHistorySwitch(item)
 }
 
-const newChat = (prompt) => {
-  const id = new Date().getTime()
-  historyRef.value.addHistory(id, prompt)
+const newChat = (title) => {
+  const id = crypto.randomUUID()
+  const item = {
+    id: id,
+    title: title
+  }
+  clickHistory(item)
+}
+
+const addChat = (item) => {
+  postData('/chat/new', item).then((res) => {
+    historyRef.value.addHistory(item)
+  })
 }
 
 </script>
@@ -25,10 +36,11 @@ const newChat = (prompt) => {
              ref="historyRef"
     />
     <Chat @new-chat="newChat"
-          :record="record"
+          @add-chat="addChat"
           style="height: 100vh"
+          ref="chatRef"
     />
-    <Repository style="height: 100vh; background-color: #f8f8f8"/>
+<!--    <Repository style="height: 100vh; background-color: #f8f8f8"/>-->
   </div>
 </template>
 

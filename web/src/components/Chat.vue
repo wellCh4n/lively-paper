@@ -1,33 +1,25 @@
 <script setup>
-import { reactive, onMounted, ref, watch } from 'vue'
+import { reactive, onMounted, ref, watch, defineExpose } from 'vue'
 import { Position } from '@element-plus/icons-vue'
 import Record from '@/components/record/Record.vue'
 
-const props = defineProps({
-  record: {
-    type: Object,
-    required: false
-  }
-})
-
-const emit = defineEmits(['new-chat'])
+const emit = defineEmits(['new-chat', 'add-chat'])
 
 const recordsView = ref()
 const form = reactive({
   prompt: ''
 })
 const records = ref([])
+const currentRecord = ref('')
 
 const submit = () => {
   if (form.prompt === '') {
     return
   }
   const prompt = form.prompt
-  if (!props.record.id) {
-    emit('new-chat', prompt)
-  }
   if (records.value.length === 0) {
-    props.record.title = prompt
+    emit('new-chat', prompt)
+    emit('add-chat', currentRecord.value)
   }
   records.value.push({
     question: prompt,
@@ -65,20 +57,23 @@ onMounted(() => {
   recordsViewToBottom()
 })
 
-watch(() => props.record.id, (current, prev) => {
-  console.log(current)
-  if (current === prev) {
-    return true
+watch(() => form.prompt, (current, _) => {
+  if (current && current.startsWith('/') && current.length === 1) {
+    console.log('触发魔法')
   }
-  // 切换record
-  if (current !== prev && prev) {
-    records.value = []
-  }
-  return true
 })
 
 watch(() => records.value.length, () => {
   recordsViewToBottom()
+})
+
+const onHistorySwitch = (item) => {
+  currentRecord.value = item
+  records.value = []
+}
+
+defineExpose({
+  onHistorySwitch
 })
 
 </script>
@@ -94,7 +89,7 @@ watch(() => records.value.length, () => {
       />
     </el-scrollbar>
     <div style="width: 100%; justify-content: center; text-align: center; height: 60px; line-height: 60px; border-bottom: 1px solid var(--el-border-color);">
-      {{ record.title ? record.title : '跃然纸上' }}
+      {{ currentRecord.title ? currentRecord.title : '跃然纸上' }}
     </div>
 
     <el-form @submit.native.prevent

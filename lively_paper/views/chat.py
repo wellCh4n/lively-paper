@@ -10,7 +10,8 @@ from langchain.chains import RetrievalQA
 from langchain.schema import Document
 
 from lively_paper.model.llms import openai
-from lively_paper.vector.stores import vectorStore
+from lively_paper.scalar import stores
+from lively_paper.vector.stores import vector_store
 from lively_paper.views.json_response import JsonObjectResponse
 from lively_paper.views.response_callback import ResponseCallback, job_done
 
@@ -23,9 +24,9 @@ def chat(request: HttpRequest) -> HttpResponseBase:
 
     if mode == 'streaming':
         qa = RetrievalQA.from_chain_type(llm=openai, chain_type="stuff",
-                                         retriever=vectorStore.as_retriever(search_type='similarity_score_threshold',
-                                                                            search_kwargs={'score_threshold': 0.005,
-                                                                                           'k': 5}),
+                                         retriever=vector_store.as_retriever(search_type='similarity_score_threshold',
+                                                                             search_kwargs={'score_threshold': 0.07,
+                                                                                            'k': 5}),
                                          return_source_documents=True)
         queue = SimpleQueue()
         callback = ResponseCallback(queue)
@@ -51,10 +52,23 @@ def chat(request: HttpRequest) -> HttpResponseBase:
 
         return StreamingHttpResponse(pull_token())
     else:
-        qa = RetrievalQA.from_chain_type(llm=openai, chain_type="stuff", retriever=vectorStore.as_retriever(),
+        qa = RetrievalQA.from_chain_type(llm=openai, chain_type="stuff", retriever=vector_store.as_retriever(),
                                          return_source_documents=True)
         result = qa({'query': query})
         return JsonObjectResponse(result)
+
+
+@require_POST
+def new_chat(request: HttpRequest) -> JsonObjectResponse:
+    body = json.loads(request.body)
+    stores.insert('history', body)
+    return JsonObjectResponse(body)
+
+
+@require_POST
+def rename_chat(request: HttpRequest) -> JsonObjectResponse:
+    body = json.loads(request.body)
+
 
 
 @require_GET
