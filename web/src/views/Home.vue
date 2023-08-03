@@ -21,14 +21,14 @@ const newChat = (prompt) => {
   <div style="display: flex">
     <History @click-history="clickHistory"
              @new-chat="newChat"
-             style="height: 100vh; background-color: #f2f2f2"
+             style="height: 100vh; background-color: #f8f8f8"
              ref="historyRef"
     />
     <Chat @new-chat="newChat"
           :record="record"
           style="height: 100vh"
     />
-    <Repository style="height: 100vh; background-color: #f2f2f2"/>
+    <Repository style="height: 100vh; background-color: #f8f8f8"/>
   </div>
 </template>
 
