@@ -1,11 +1,13 @@
 import json
 from queue import SimpleQueue
 from threading import Thread
+from typing import Sequence
 
 from django.http import HttpRequest, StreamingHttpResponse, HttpResponseBase, HttpResponse
 from django.views.decorators.http import require_POST, require_GET
 from langchain.callbacks import StreamingStdOutCallbackHandler
 from langchain.chains import RetrievalQA
+from langchain.schema import Document
 
 from lively_paper.model.llms import openai
 from lively_paper.vector.stores import vectorStore
@@ -35,12 +37,17 @@ def chat(request: HttpRequest) -> HttpResponseBase:
             while True:
                 next_token = queue.get(block=True)
                 if next_token is job_done:
-                    yield '\r\n'
-                    for document in callback.documents:
-                        yield f'——《{document.metadata["source"]}》第 {str(document.metadata["page"])} 页\n'
+                    if callback.documents:
+                        yield '\n***'
+                        documents = merge_document(callback.documents)
+                        for document in documents:
+                            yield f'\n* `{document}`'
                     break
                 yield next_token
             thread.join()
+
+        def merge_document(documents: Sequence[Document]):
+            return set(map(lambda document: document.metadata['source'], documents))
 
         return StreamingHttpResponse(pull_token())
     else:
