@@ -29,8 +29,9 @@ const submit = () => {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
-            query: prompt,
-            mode: "streaming"
+          query: prompt,
+          mode: 'streaming',
+          id: currentRecord.value.id
         })
       })
       const reader = response.body.getReader()
