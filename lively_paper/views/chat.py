@@ -10,6 +10,8 @@ from langchain.chains import RetrievalQA, ConversationalRetrievalChain
 from langchain.memory import MongoDBChatMessageHistory, ConversationBufferMemory
 from langchain.schema import Document, BaseChatMessageHistory
 
+from lively_paper.chain.memory_retrieval_qa import MemoryRetrievalQA
+from lively_paper.chain.prompt import PROMPT
 from lively_paper.model.llms import openai
 from lively_paper.vector.stores import vector_store
 from lively_paper.views.json_response import JsonObjectResponse
@@ -29,14 +31,18 @@ def chat(request: HttpRequest) -> HttpResponseBase:
                                       chat_memory=chat_memory)
 
     if mode == 'streaming':
-        qa = RetrievalQA.from_chain_type(llm=openai, chain_type="stuff", memory=memory,
-                                         retriever=vector_store.as_retriever(search_type='similarity_score_threshold',
-                                                                             search_kwargs={'score_threshold': 0.07,
-                                                                                            'k': 5}),
-                                         return_source_documents=True)
+        qa = MemoryRetrievalQA.from_llm(llm=openai, chain_type="stuff", memory=memory,
+                                        retriever=vector_store.as_retriever(
+                                            search_type='similarity_score_threshold',
+                                            search_kwargs={'score_threshold': 0.07,
+                                                           'k': 5}),
+                                        return_source_documents=True,
+                                        combine_docs_chain_kwargs={
+                                            'prompt': PROMPT
+                                        })
         queue = SimpleQueue()
         callback = ResponseCallback(queue)
-        thread = Thread(target=qa, kwargs={'inputs': {'query': query},
+        thread = Thread(target=qa, kwargs={'inputs': {'question': query},
                                            'callbacks': [StreamingStdOutCallbackHandler(), callback]})
         thread.start()
 
@@ -58,11 +64,15 @@ def chat(request: HttpRequest) -> HttpResponseBase:
 
         return StreamingHttpResponse(pull_token())
     else:
-        qa = ConversationalRetrievalChain.from_llm(llm=openai,
-                                                   chain_type='stuff',
-                                                   memory=memory,
-                                                   retriever=vector_store.as_retriever(),
-                                                   return_source_documents=True)
+        qa = MemoryRetrievalQA.from_llm(llm=openai, chain_type="stuff", memory=memory,
+                                        retriever=vector_store.as_retriever(
+                                            search_type='similarity_score_threshold',
+                                            search_kwargs={'score_threshold': 0.07,
+                                                           'k': 5}),
+                                        return_source_documents=True,
+                                        combine_docs_chain_kwargs={
+                                            'prompt': PROMPT
+                                        })
         result = qa(inputs={'question': query})
         return JsonObjectResponse(result)
 
