@@ -6,13 +6,13 @@ from typing import Sequence
 from django.http import HttpRequest, StreamingHttpResponse, HttpResponseBase, HttpResponse
 from django.views.decorators.http import require_POST, require_GET
 from langchain.callbacks import StreamingStdOutCallbackHandler
-from langchain.chains import RetrievalQA, ConversationalRetrievalChain
 from langchain.memory import MongoDBChatMessageHistory, ConversationBufferMemory
 from langchain.schema import Document, BaseChatMessageHistory
 
 from lively_paper.chain.memory_retrieval_qa import MemoryRetrievalQA
 from lively_paper.chain.prompt import PROMPT
 from lively_paper.model.llms import openai
+from lively_paper.scalar.stores import scalar_store
 from lively_paper.vector.stores import vector_store
 from lively_paper.views.json_response import JsonObjectResponse
 from lively_paper.views.response_callback import ResponseCallback, job_done
@@ -25,7 +25,7 @@ def chat(request: HttpRequest) -> HttpResponseBase:
     mode: str = data.get('mode', 'streaming')
     session_id: str = data['id']
 
-    chat_memory: BaseChatMessageHistory = MongoDBChatMessageHistory(connection_string='mongodb://127.0.0.1:27017',
+    chat_memory: BaseChatMessageHistory = MongoDBChatMessageHistory(connection_string=scalar_store.connection,
                                                                     session_id=session_id)
     memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True, output_key='answer',
                                       chat_memory=chat_memory)
@@ -80,6 +80,12 @@ def chat(request: HttpRequest) -> HttpResponseBase:
 @require_POST
 def new_chat(request: HttpRequest) -> JsonObjectResponse:
     body = json.loads(request.body)
+    scalar_store.insert(
+        {
+            'SessionId': body['id'],
+            'Title': body['title']
+        }
+    )
     return JsonObjectResponse(body)
 
 
@@ -89,5 +95,6 @@ def rename_chat(request: HttpRequest) -> JsonObjectResponse:
 
 
 @require_GET
-def histories(request: HttpRequest) -> HttpResponse:
-    return HttpResponse('1')
+def histories(request: HttpRequest) -> JsonObjectResponse:
+    return JsonObjectResponse(scalar_store.list(), safe=False)
+    # return JsonObjectResponse(scalar_store.list())
