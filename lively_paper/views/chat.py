@@ -24,8 +24,9 @@ def chat(request: HttpRequest) -> HttpResponseBase:
     session_id: str = data['id']
 
     chat_memory: BaseChatMessageHistory = MongoDBChatMessageHistory(connection_string='mongodb://127.0.0.1:27017',
-                                                        session_id=session_id)
-    memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True, output_key='answer', chat_memory=chat_memory)
+                                                                    session_id=session_id)
+    memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True, output_key='answer',
+                                      chat_memory=chat_memory)
 
     if mode == 'streaming':
         qa = RetrievalQA.from_chain_type(llm=openai, chain_type="stuff", memory=memory,
