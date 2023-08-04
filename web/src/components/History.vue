@@ -1,7 +1,7 @@
 <script setup>
 import { Plus } from '@element-plus/icons-vue'
 import HistoryItem from "@/components/history/HistoryItem.vue"
-import { ref } from 'vue'
+import { ref, defineExpose } from 'vue'
 
 const emit = defineEmits(['click-history', 'new-chat'])
 
