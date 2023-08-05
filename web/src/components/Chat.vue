@@ -94,15 +94,17 @@ defineExpose({
 
 <template>
   <div class="chat-wrapper">
-    <el-scrollbar style="width: 100%;  margin-bottom: 90px" ref="recordsView">
+    <AreaHeader :title="currentRecord.title ? currentRecord.title : 'Lively Paper'" style="margin-top: 5px"/>
+    <el-scrollbar style="width: 100%;  margin-bottom: 90px; border-bottom: solid 1px var(--el-border-color);"
+                  ref="recordsView">
       <Record v-for="item in records"
               :key="item.question"
               :question="item.question"
               :answer="item.answer"
               :answerCallback="item.answerCallback"
+              class="record"
       />
     </el-scrollbar>
-    <AreaHeader :title="currentRecord.title ? currentRecord.title : 'Lively Paper'" style="margin-top: 5px"/>
 
     <el-form @submit.native.prevent
              @submit="submit"
@@ -112,7 +114,7 @@ defineExpose({
       <el-form-item style="margin-bottom: 0; background-color: var(--el-color-info-light-9)">
         <el-input autofocus
                   v-model="form.prompt"
-                  style="height: 50px; box-shadow: var(--el-box-shadow); margin: 0 5px">
+                  style="height: 50px; box-shadow: var(--el-box-shadow); margin: 0 2rem">
           <template #append>
             <el-button :icon="Position" />
           </template>
@@ -126,11 +128,14 @@ defineExpose({
 <style scoped>
 .chat-wrapper {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
   width: 100%;
   position: relative;
   margin-left: 5px;
   background-color: var(--el-color-info-light-9);
   border-radius: var(--el-border-radius-base);
+}
+.record:last-of-type {
+  padding-bottom: 1rem;
 }
 </style>
