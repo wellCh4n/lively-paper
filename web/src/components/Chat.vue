@@ -13,8 +13,10 @@ const form = reactive({
 })
 const records = ref([])
 const currentRecord = ref('')
+const inputDisable = ref(false)
 
 const submit = () => {
+  inputDisable.value = true
   if (form.prompt === '') {
     return
   }
@@ -40,6 +42,7 @@ const submit = () => {
       while(true) {
         const { done, value } = await reader.read()
         if (done) {
+          inputDisable.value = false
           break
         }
         const word = new TextDecoder().decode(value)
@@ -114,6 +117,7 @@ defineExpose({
       <el-form-item style="margin-bottom: 0; background-color: var(--el-color-info-light-9)">
         <el-input autofocus
                   v-model="form.prompt"
+                  :disabled="inputDisable"
                   style="height: 50px; box-shadow: var(--el-box-shadow); margin: 0 2rem">
           <template #append>
             <el-button :icon="Position" />
