@@ -51,7 +51,7 @@ defineExpose({
     >
       New Chat
     </el-button>
-    <el-scrollbar style="margin: 0 5px 5px 0">
+    <el-scrollbar style="margin: 0 5px 5px 5px">
       <el-menu :default-active="activeIndex"
                ref="menu"
                style="border: none; background-color: var(--el-color-info-light-9)">
