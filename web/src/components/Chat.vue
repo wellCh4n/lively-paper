@@ -94,7 +94,7 @@ defineExpose({
 
 <template>
   <div class="chat-wrapper">
-    <el-scrollbar style="width: 100%; margin-top: 1rem; margin-bottom: 100px" ref="recordsView">
+    <el-scrollbar style="width: 100%;  margin-bottom: 90px" ref="recordsView">
       <Record v-for="item in records"
               :key="item.question"
               :question="item.question"
