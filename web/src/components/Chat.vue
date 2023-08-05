@@ -103,9 +103,6 @@ defineExpose({
       />
     </el-scrollbar>
     <AreaHeader :title="currentRecord.title ? currentRecord.title : 'Lively Paper'" style="margin-top: 5px"/>
-<!--    <div style="width: 100%; justify-content: center; text-align: center; height: 60px; line-height: 60px; border-bottom: 1px solid var(&#45;&#45;el-border-color);">-->
-<!--      {{ currentRecord.title ? currentRecord.title : 'Lively Paper' }}-->
-<!--    </div>-->
 
     <el-form @submit.native.prevent
              @submit="submit"
