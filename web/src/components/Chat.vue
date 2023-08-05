@@ -2,6 +2,7 @@
 import { reactive, onMounted, ref, watch, defineExpose } from 'vue'
 import { Position } from '@element-plus/icons-vue'
 import Record from '@/components/record/Record.vue'
+import { get } from '@/utils/request'
 
 const emit = defineEmits(['new-chat', 'add-chat'])
 
@@ -71,6 +72,9 @@ watch(() => records.value.length, () => {
 const onHistorySwitch = (item) => {
   currentRecord.value = item
   records.value = []
+  get(`/chat/history/${item.id}`).then((res) => {
+    records.value = res
+  })
 }
 
 defineExpose({

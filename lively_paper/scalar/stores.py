@@ -1,29 +1,40 @@
 from typing import Dict, Optional
 
 from pymongo import MongoClient
+from pymongo.collection import Collection
 
 
 class Store:
     client: MongoClient
     connection: str
+    collection_dict: Dict[str, Collection] = dict()
 
     def __init__(self, connection: str) -> None:
         self.connection = connection
         self.client = MongoClient(connection)
         self.db = self.client['chat_history']
-        self.collection = self.db['history']
-        self.collection.create_index('SessionId')
+
+        history = self.db['history']
+        history.create_index('SessionId')
+        self.collection_dict['history'] = history
+
+        message_store = self.db['message_store']
+        message_store.create_index('SessionId')
+        self.collection_dict['message_store'] = message_store
+
         super().__init__()
 
-    def insert(self, data: Dict):
-        self.collection.insert_one(data)
+    def insert(self, collection_name: str, data: Dict):
+        collection = self.collection_dict[collection_name]
+        collection.insert_one(data)
 
-    def list(self, data: Optional[Dict] = None):
+    def list(self, collection_name: str, data: Optional[Dict] = None):
+        collection = self.collection_dict[collection_name]
         result = []
         if data:
-            cursor = self.collection.find(data)
+            cursor = collection.find(data)
         else:
-            cursor = self.collection.find({})
+            cursor = collection.find({})
         for document in cursor:
             document['_id'] = str(document['_id'])
             result.append(document)

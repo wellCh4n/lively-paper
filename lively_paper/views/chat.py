@@ -80,12 +80,7 @@ def chat(request: HttpRequest) -> HttpResponseBase:
 @require_POST
 def new_chat(request: HttpRequest) -> JsonObjectResponse:
     body = json.loads(request.body)
-    scalar_store.insert(
-        {
-            'SessionId': body['id'],
-            'Title': body['title']
-        }
-    )
+    scalar_store.insert('history', {'SessionId': body['id'], 'Title': body['title']})
     return JsonObjectResponse(body)
 
 
@@ -96,5 +91,20 @@ def rename_chat(request: HttpRequest) -> JsonObjectResponse:
 
 @require_GET
 def histories(request: HttpRequest) -> JsonObjectResponse:
-    return JsonObjectResponse(scalar_store.list(), safe=False)
-    # return JsonObjectResponse(scalar_store.list())
+    return JsonObjectResponse(scalar_store.list('history'), safe=False)
+
+
+@require_GET
+def history(request: HttpRequest, session_id: str) -> JsonObjectResponse:
+    store_list = scalar_store.list('message_store', {'SessionId': session_id})
+
+    result = []
+    for index in range(0, len(store_list), 2):
+        human = json.loads(store_list[index]['History'])
+        ai = json.loads(store_list[index + 1]['History'])
+        result_item = {
+            'question': human['data']['content'],
+            'answer': ai['data']['content']
+        }
+        result.append(result_item)
+    return JsonObjectResponse(result, safe=False)

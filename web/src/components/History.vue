@@ -1,7 +1,8 @@
 <script setup>
-import { Plus } from '@element-plus/icons-vue'
-import HistoryItem from "@/components/history/HistoryItem.vue"
-import { ref, defineExpose } from 'vue'
+import {Plus} from '@element-plus/icons-vue'
+import HistoryItem from '@/components/history/HistoryItem.vue'
+import {defineExpose, onMounted, ref} from 'vue'
+import {get} from '@/utils/request'
 
 const emit = defineEmits(['click-history', 'new-chat'])
 
@@ -13,6 +14,17 @@ const onClickHistory = (item) => {
 const addHistory = (item) => {
   histories.value.push(item)
 }
+
+onMounted(() => {
+  get('/chat/histories').then((res) => {
+    histories.value = res.map((item) => {
+      return {
+        id: item.SessionId,
+        title: item.Title
+      }
+    })
+  })
+})
 
 defineExpose({
   addHistory
@@ -30,7 +42,13 @@ defineExpose({
       New Chat
     </el-button>
     <el-scrollbar style="width: 300px;">
-      <HistoryItem @click="onClickHistory(item)" :title="item.title" v-for="item in histories" :key="item.id" class="scrollbar-demo-item">{{ item.title }}</HistoryItem>
+      <HistoryItem @click="onClickHistory(item)"
+                   :title="item.title"
+                   v-for="item in histories.reverse()"
+                   :key="item.id"
+                   class="scrollbar-demo-item">
+        {{ item.title }}
+      </HistoryItem>
     </el-scrollbar>
   </div>
 </template>
