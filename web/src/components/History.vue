@@ -9,7 +9,7 @@ const emit = defineEmits(['click-history', 'new-chat'])
 const histories = ref([])
 
 const onClickHistory = (item) => {
-  emit('click-history', item)
+  emit('click-history', item, false)
 }
 const addHistory = (item) => {
   histories.value.push(item)

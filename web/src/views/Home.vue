@@ -7,8 +7,8 @@ import { postData } from '@/utils/request'
 
 const historyRef = ref()
 const chatRef = ref()
-const clickHistory = (item) => {
-  chatRef.value.onHistorySwitch(item)
+const clickHistory = (item, isNew) => {
+  chatRef.value.onHistorySwitch(item, isNew)
 }
 
 const newChat = (title) => {
@@ -17,7 +17,7 @@ const newChat = (title) => {
     id: id,
     title: title
   }
-  clickHistory(item)
+  clickHistory(item, true)
 }
 
 const addChat = (item) => {

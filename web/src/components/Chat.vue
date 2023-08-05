@@ -67,14 +67,19 @@ watch(() => form.prompt, (current, _) => {
 
 watch(() => records.value.length, () => {
   recordsViewToBottom()
+  return true
 })
 
-const onHistorySwitch = (item) => {
+const onHistorySwitch = (item, isNew) => {
   currentRecord.value = item
-  records.value = []
-  get(`/chat/history/${item.id}`).then((res) => {
-    records.value = res
-  })
+  if (isNew) {
+    records.value = []
+  }
+  if (!isNew) {
+    get(`/chat/history/${item.id}`).then((res) => {
+      records.value = res
+    })
+  }
 }
 
 defineExpose({
