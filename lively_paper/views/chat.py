@@ -29,17 +29,12 @@ def chat(request: HttpRequest) -> HttpResponseBase:
                                                                     session_id=session_id)
     memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True, output_key='answer',
                                       chat_memory=chat_memory)
-
+    qa = MemoryRetrievalQA.from_llm(llm=openai, chain_type="stuff", memory=memory, return_source_documents=True,
+                                    retriever=vector_store.as_retriever(
+                                        search_type='similarity_score_threshold',
+                                        search_kwargs={'score_threshold': 0.07, 'k': 5}),
+                                    combine_docs_chain_kwargs={'prompt': PROMPT})
     if mode == 'streaming':
-        qa = MemoryRetrievalQA.from_llm(llm=openai, chain_type="stuff", memory=memory,
-                                        retriever=vector_store.as_retriever(
-                                            search_type='similarity_score_threshold',
-                                            search_kwargs={'score_threshold': 0.07,
-                                                           'k': 5}),
-                                        return_source_documents=True,
-                                        combine_docs_chain_kwargs={
-                                            'prompt': PROMPT
-                                        })
         queue = SimpleQueue()
         callback = ResponseCallback(queue)
         thread = Thread(target=qa, kwargs={'inputs': {'question': query},
@@ -64,15 +59,6 @@ def chat(request: HttpRequest) -> HttpResponseBase:
 
         return StreamingHttpResponse(pull_token())
     else:
-        qa = MemoryRetrievalQA.from_llm(llm=openai, chain_type="stuff", memory=memory,
-                                        retriever=vector_store.as_retriever(
-                                            search_type='similarity_score_threshold',
-                                            search_kwargs={'score_threshold': 0.07,
-                                                           'k': 5}),
-                                        return_source_documents=True,
-                                        combine_docs_chain_kwargs={
-                                            'prompt': PROMPT
-                                        })
         result = qa(inputs={'question': query})
         return JsonObjectResponse(result)
 
