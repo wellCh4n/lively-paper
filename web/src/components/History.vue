@@ -1,18 +1,26 @@
 <script setup>
 import {Plus} from '@element-plus/icons-vue'
-import HistoryItem from '@/components/history/HistoryItem.vue'
 import {defineExpose, onMounted, ref} from 'vue'
 import {get} from '@/utils/request'
 
 const emit = defineEmits(['click-history', 'new-chat'])
 
 const histories = ref([])
+const activeIndex = ref('-1')
 
 const onClickHistory = (item) => {
+  activeIndex.value = item.id
   emit('click-history', item, false)
 }
+
+const onNewChat = () => {
+  emit('new-chat', 'New Chat')
+  activeIndex.value = '-1'
+}
+
 const addHistory = (item) => {
   histories.value.push(item)
+  activeIndex.value = item.id
 }
 
 onMounted(() => {
@@ -37,18 +45,26 @@ defineExpose({
                :icon="Plus"
                size="large"
                style="width: 300px;"
-               @click="emit('new-chat', 'New Chat')"
+               @click="onNewChat"
     >
       New Chat
     </el-button>
     <el-scrollbar style="width: 300px;">
-      <HistoryItem @click="onClickHistory(item)"
-                   :title="item.title"
-                   v-for="item in histories.reverse()"
-                   :key="item.id"
-                   class="scrollbar-demo-item">
-        {{ item.title }}
-      </HistoryItem>
+      <el-menu :default-active="activeIndex" ref="menu">
+        <el-menu-item v-for="item in histories"
+                      @click="onClickHistory(item)"
+                      :index="item.id"
+                      :key="item.id">
+          {{ item.title }} - {{ item.id }}
+        </el-menu-item>
+      </el-menu>
+<!--      <HistoryItem @click="onClickHistory(item)"-->
+<!--                   :title="item.title"-->
+<!--                   v-for="item in histories.reverse()"-->
+<!--                   :key="item.id"-->
+<!--                   class="scrollbar-demo-item">-->
+<!--        {{ item.title }}-->
+<!--      </HistoryItem>-->
     </el-scrollbar>
   </div>
 </template>

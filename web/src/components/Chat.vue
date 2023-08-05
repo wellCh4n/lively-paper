@@ -71,6 +71,9 @@ watch(() => records.value.length, () => {
 })
 
 const onHistorySwitch = (item, isNew) => {
+  if (item.id === currentRecord.value.id) {
+    return
+  }
   currentRecord.value = item
   if (isNew) {
     records.value = []
