@@ -55,7 +55,7 @@ defineExpose({
                       @click="onClickHistory(item)"
                       :index="item.id"
                       :key="item.id">
-          {{ item.title }} - {{ item.id }}
+          {{ item.title }}
         </el-menu-item>
       </el-menu>
 <!--      <HistoryItem @click="onClickHistory(item)"-->
