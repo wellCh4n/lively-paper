@@ -3,6 +3,7 @@ import { reactive, onMounted, ref, watch, defineExpose } from 'vue'
 import { Position } from '@element-plus/icons-vue'
 import Record from '@/components/record/Record.vue'
 import { get } from '@/utils/request'
+import AreaHeader from "@/components/AreaHeader.vue";
 
 const emit = defineEmits(['new-chat', 'add-chat'])
 
@@ -92,7 +93,7 @@ defineExpose({
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column-reverse; width: 100%; position: relative; margin: 0 1rem">
+  <div class="chat-wrapper">
     <el-scrollbar style="width: 100%; margin-top: 1rem; margin-bottom: 100px" ref="recordsView">
       <Record v-for="item in records"
               :key="item.question"
@@ -101,19 +102,20 @@ defineExpose({
               :answerCallback="item.answerCallback"
       />
     </el-scrollbar>
-    <div style="width: 100%; justify-content: center; text-align: center; height: 60px; line-height: 60px; border-bottom: 1px solid var(--el-border-color);">
-      {{ currentRecord.title ? currentRecord.title : '跃然纸上' }}
-    </div>
+    <AreaHeader :title="currentRecord.title ? currentRecord.title : 'Lively Paper'" style="margin-top: 5px"/>
+<!--    <div style="width: 100%; justify-content: center; text-align: center; height: 60px; line-height: 60px; border-bottom: 1px solid var(&#45;&#45;el-border-color);">-->
+<!--      {{ currentRecord.title ? currentRecord.title : 'Lively Paper' }}-->
+<!--    </div>-->
 
     <el-form @submit.native.prevent
              @submit="submit"
              :model="form"
-             style="width: 100%; position: absolute; bottom: 20px; boxShadow: var(--el-box-shadow)"
+             style="width: 100%; position: absolute; bottom: 20px;"
     >
-      <el-form-item style="margin-bottom: 0;">
+      <el-form-item style="margin-bottom: 0; background-color: var(--el-color-info-light-9)">
         <el-input autofocus
                   v-model="form.prompt"
-                  style="height: 50px;">
+                  style="height: 50px; box-shadow: var(--el-box-shadow); margin: 0 5px">
           <template #append>
             <el-button :icon="Position" />
           </template>
@@ -125,4 +127,13 @@ defineExpose({
 </template>
 
 <style scoped>
+.chat-wrapper {
+  display: flex;
+  flex-direction: column-reverse;
+  width: 100%;
+  position: relative;
+  margin-left: 5px;
+  background-color: var(--el-color-info-light-9);
+  border-radius: var(--el-border-radius-base);
+}
 </style>

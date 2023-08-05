@@ -32,7 +32,7 @@ onMounted(() => {
     <div style="margin-right: 1em">
       <el-avatar>Paper</el-avatar>
     </div>
-    <div style="background-color: #f8f8f8; padding: 0 1rem;">
+    <div class="answer-block">
       <VueMarkdown :source="contentParam.content"/>
 <!--      <p style="word-break: break-all; padding: 0 1rem;">{{ contentParam.content }}</p>-->
     </div>
@@ -40,5 +40,10 @@ onMounted(() => {
 </template>
 
 <style scoped>
-
+.answer-block {
+  background-color: #fff;
+  padding: 0 1rem;
+  border: solid 1px var(--el-border-color);
+  border-radius: var(--el-border-radius-base);
+}
 </style>

@@ -1,6 +1,8 @@
 <script setup>
+import { Upload } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import { genFileId } from 'element-plus'
+import AreaHeader from "@/components/AreaHeader.vue";
 
 const uploader = ref()
 const upload = (file) => {
@@ -27,19 +29,19 @@ const cancel = (files) => {
 </script>
 
 <template>
-  <div style="width: 300px;">
-    <el-upload style="width: 100%; display: inline-grid"
+  <div style="width: 300px; border-radius: var(--el-border-radius-base)">
+    <AreaHeader title="Repository" />
+    <el-upload style="width: 100%; display: inline-grid;"
                :http-request="upload"
                :multiple="false"
                :on-exceed="cancel"
                :limit="1"
                ref="uploader"
-               class="uploader"
-    >
+               class="uploader">
       <el-button type="primary"
-                 style="width: 100%"
+                 style="width: 100%; margin: 5px 5px"
                  size="large"
-      >
+                 :icon="Upload">
         Click to upload file
       </el-button>
     </el-upload>

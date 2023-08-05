@@ -4,6 +4,7 @@ import Chat from "@/components/Chat.vue"
 import History from "@/components/History.vue"
 import Repository from "@/components/Repository.vue"
 import { postData } from '@/utils/request'
+import {useRoute} from "vue-router";
 
 const historyRef = ref()
 const chatRef = ref()
@@ -30,17 +31,20 @@ const addChat = (item) => {
 
 <template>
   <div style="display: flex">
-    <History @click-history="clickHistory"
-             @new-chat="newChat"
-             style="height: 100vh; background-color: #f8f8f8"
-             ref="historyRef"
-    />
+    <div>
+      <History @click-history="clickHistory"
+               @new-chat="newChat"
+               style="height: 50vh; background-color: var(--el-color-info-light-9);"
+               ref="historyRef"
+      />
+      <Repository style="height: 50vh; background-color: var(--el-color-info-light-9)"/>
+    </div>
     <Chat @new-chat="newChat"
           @add-chat="addChat"
-          style="height: 100vh"
+          style="height: 100vh;"
           ref="chatRef"
     />
-<!--    <Repository style="height: 100vh; background-color: #f8f8f8"/>-->
+
   </div>
 </template>
 

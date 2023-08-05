@@ -16,7 +16,7 @@ defineProps({
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; justify-content: center;">
+  <div style="display: flex; flex-direction: column; justify-content: center; margin: 0 1rem">
     <Question :content="question" style="margin-top: 1rem" />
     <Answer :content="answer" :content-callback="answerCallback" style="margin-top: 1rem" />
   </div>

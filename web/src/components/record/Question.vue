@@ -9,7 +9,7 @@ defineProps({
 
 <template>
   <div style="display: flex; justify-content: right">
-    <div style="text-align: right; background-color: #f8f8f8">
+    <div class="question-block">
       <p style="word-break: break-all; padding: 0 1rem">{{ content }}</p>
     </div>
     <div style="margin-left: 10px">
@@ -19,5 +19,10 @@ defineProps({
 </template>
 
 <style scoped>
-
+.question-block {
+  text-align: right;
+  background-color: #fff;
+  border: solid 1px var(--el-border-color);
+  border-radius: var(--el-border-radius-base);
+}
 </style>
