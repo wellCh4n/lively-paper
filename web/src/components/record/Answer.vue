@@ -1,6 +1,11 @@
 <script setup>
-import { onMounted, toRef, reactive } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import VueMarkdown from 'markdown-vue'
+import { DocumentCopy } from '@element-plus/icons-vue'
+
+const copyMessage = 'Copy Answer'
+const copiedMessage = 'Copied!'
+const copyTooltipContent = ref(copyMessage)
 
 const props = defineProps({
   content: {
@@ -15,6 +20,18 @@ const props = defineProps({
 const contentParam = reactive({
   content: props.content
 })
+
+const copyAnswer = () => {
+  const type = "text/plain";
+  const blob = new Blob([contentParam.content], { type })
+  const data = [new ClipboardItem({ [type]: blob })]
+  navigator.clipboard.write(data).then(() => {
+    copyTooltipContent.value = copiedMessage
+    setTimeout(() => {
+      copyTooltipContent.value = copyMessage
+    }, 1000)
+  })
+}
 
 onMounted(() => {
   if (props.contentCallback === undefined) {
@@ -34,8 +51,17 @@ onMounted(() => {
     </div>
     <div class="answer-block">
       <VueMarkdown :source="contentParam.content"/>
-<!--      <p style="word-break: break-all; padding: 0 1rem;">{{ contentParam.content }}</p>-->
     </div>
+    <el-tooltip
+        effect="dark"
+        :content="copyTooltipContent"
+        placement="top-end"
+    >
+      <el-button :icon="DocumentCopy"
+                 plain @click="copyAnswer"
+                 style="margin-left: 5px"
+      />
+    </el-tooltip>
   </div>
 </template>
 
