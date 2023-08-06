@@ -1,5 +1,5 @@
 <script setup>
-import {Plus} from '@element-plus/icons-vue'
+import {Plus, Delete} from '@element-plus/icons-vue'
 import {defineExpose, onMounted, ref} from 'vue'
 import {get} from '@/utils/request'
 import AreaHeader from "@/components/AreaHeader.vue";
@@ -22,6 +22,10 @@ const onNewChat = () => {
 const addHistory = (item) => {
   histories.value.push(item)
   activeIndex.value = item.id
+}
+
+const deleteHistory = (event) => {
+  console.log(event)
 }
 
 onMounted(() => {
@@ -60,7 +64,16 @@ defineExpose({
                       :index="item.id"
                       :key="item.id"
                       class="history-item">
-          {{ item.title.length > 15 ? `${item.title.slice(0, 15)}...` : item.title }}
+          <template #title>
+            {{ item.title.length > 15 ? `${item.title.slice(0, 15)}...` : item.title }}
+            <el-link type="danger"
+                     :underline="false"
+                     style="position: absolute; right: 0;"
+                     @click.stop="deleteHistory"
+            >
+              <el-icon style="margin-right: 10px"><Delete /></el-icon>
+            </el-link>
+          </template>
         </el-menu-item>
       </el-menu>
     </el-scrollbar>

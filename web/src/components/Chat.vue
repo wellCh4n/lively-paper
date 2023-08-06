@@ -48,6 +48,7 @@ const submit = () => {
         const word = new TextDecoder().decode(value)
         answer += word
         setAnswer(answer)
+        recordsViewToBottom()
       }
     }
   })
