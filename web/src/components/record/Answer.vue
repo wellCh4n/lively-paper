@@ -71,5 +71,11 @@ onMounted(() => {
   padding: 0 1rem;
   border: solid 1px var(--el-border-color);
   border-radius: var(--el-border-radius-base);
+  transition: background-color var(--el-transition-duration),color var(--el-transition-duration);
+}
+.answer-block:hover {
+  color: var(--el-menu-active-color);
+  background-color: var(--el-color-primary-light-9);
+  transition: background-color var(--el-transition-duration),color var(--el-transition-duration);
 }
 </style>

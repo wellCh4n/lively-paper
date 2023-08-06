@@ -63,13 +63,6 @@ defineExpose({
           {{ item.title.length > 15 ? `${item.title.slice(0, 15)}...` : item.title }}
         </el-menu-item>
       </el-menu>
-<!--      <HistoryItem @click="onClickHistory(item)"-->
-<!--                   :title="item.title"-->
-<!--                   v-for="item in histories.reverse()"-->
-<!--                   :key="item.id"-->
-<!--                   class="scrollbar-demo-item">-->
-<!--        {{ item.title }}-->
-<!--      </HistoryItem>-->
     </el-scrollbar>
   </div>
 </template>
