@@ -5,6 +5,7 @@ import History from "@/components/History.vue"
 import Repository from "@/components/Repository.vue"
 import { postData } from '@/utils/request'
 import {useRouter} from "vue-router";
+import {get} from '@/utils/request'
 
 const historyRef = ref()
 const chatRef = ref()
@@ -33,7 +34,9 @@ const addChat = (item) => {
 onMounted(() => {
   const id = router.currentRoute.value.params.id
   if (id) {
-    clickHistory({ id }, false)
+    get(`/chat/history/${id}/find`).then((res) => {
+      clickHistory({ id, title: res.Title }, false)
+    })
   }
 })
 

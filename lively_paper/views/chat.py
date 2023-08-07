@@ -76,6 +76,12 @@ def delete_history(request: HttpRequest, session_id: str) -> JsonObjectResponse:
     return JsonObjectResponse({})
 
 
+@require_GET
+def find_history(request: HttpRequest, session_id: str) -> JsonObjectResponse:
+    history_item = scalar_store.find('history', {'SessionId': session_id})
+    return JsonObjectResponse(history_item, safe=False)
+
+
 @require_POST
 def rename_chat(request: HttpRequest) -> JsonObjectResponse:
     body = json.loads(request.body)

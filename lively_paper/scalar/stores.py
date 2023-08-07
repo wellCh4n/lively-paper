@@ -32,6 +32,12 @@ class Store:
         collection = self.collection_dict[collection_name]
         collection.delete_one(data)
 
+    def find(self, collection_name: str, data: Dict):
+        collection = self.collection_dict[collection_name]
+        data = collection.find_one(data)
+        data['_id'] = str(data['_id'])
+        return data
+
     def list(self, collection_name: str, data: Optional[Dict] = None) -> list:
         collection = self.collection_dict[collection_name]
         result = []
