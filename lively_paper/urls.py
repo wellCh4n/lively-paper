@@ -26,6 +26,7 @@ urlpatterns = [
     path('chat', lively_paper.views.chat.chat),
     path('chat/histories', lively_paper.views.chat.histories),
     path('chat/history/<str:session_id>', lively_paper.views.chat.history),
+    path('chat/history/<str:session_id>/delete', lively_paper.views.chat.delete_history),
     path('chat/new', lively_paper.views.chat.new_chat),
     path('file', lively_paper.views.file.upload),
     path('admin', admin.site.urls),

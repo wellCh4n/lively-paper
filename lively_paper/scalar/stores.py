@@ -28,7 +28,11 @@ class Store:
         collection = self.collection_dict[collection_name]
         collection.insert_one(data)
 
-    def list(self, collection_name: str, data: Optional[Dict] = None):
+    def delete(self, collection_name: str, data: Dict):
+        collection = self.collection_dict[collection_name]
+        collection.delete_one(data)
+
+    def list(self, collection_name: str, data: Optional[Dict] = None) -> list:
         collection = self.collection_dict[collection_name]
         result = []
         if data:

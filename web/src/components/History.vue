@@ -2,15 +2,19 @@
 import {Plus, Delete} from '@element-plus/icons-vue'
 import {defineExpose, onMounted, ref} from 'vue'
 import {get} from '@/utils/request'
-import AreaHeader from "@/components/AreaHeader.vue";
+import AreaHeader from '@/components/AreaHeader.vue'
+import {useRouter} from 'vue-router'
 
 const emit = defineEmits(['click-history', 'new-chat'])
 
 const histories = ref([])
 const activeIndex = ref('-1')
 
+const router = useRouter()
+
 const onClickHistory = (item) => {
   activeIndex.value = item.id
+  router.push(`/chat/${item.id}`)
   emit('click-history', item, false)
 }
 
@@ -24,8 +28,8 @@ const addHistory = (item) => {
   activeIndex.value = item.id
 }
 
-const deleteHistory = (event) => {
-  console.log(event)
+const deleteHistory = (item) => {
+  console.log(item)
 }
 
 onMounted(() => {
@@ -60,7 +64,7 @@ defineExpose({
                ref="menu"
                style="border: none; background-color: var(--el-color-info-light-9)">
         <el-menu-item v-for="item in histories.slice().reverse()"
-                      @click="onClickHistory(item)"
+                      @click="onClickHistory(item);"
                       :index="item.id"
                       :key="item.id"
                       class="history-item">
@@ -69,7 +73,7 @@ defineExpose({
             <el-link type="danger"
                      :underline="false"
                      style="position: absolute; right: 0;"
-                     @click.stop="deleteHistory"
+                     @click.stop="deleteHistory(item)"
             >
               <el-icon style="margin-right: 10px"><Delete /></el-icon>
             </el-link>

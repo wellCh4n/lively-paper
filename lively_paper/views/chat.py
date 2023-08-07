@@ -70,6 +70,12 @@ def new_chat(request: HttpRequest) -> JsonObjectResponse:
     return JsonObjectResponse(body)
 
 
+@require_GET
+def delete_history(request: HttpRequest, session_id: str) -> JsonObjectResponse:
+    scalar_store.delete('history', {'SessionId': session_id})
+    return JsonObjectResponse({})
+
+
 @require_POST
 def rename_chat(request: HttpRequest) -> JsonObjectResponse:
     body = json.loads(request.body)

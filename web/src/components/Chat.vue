@@ -3,7 +3,7 @@ import { reactive, onMounted, ref, watch, defineExpose } from 'vue'
 import { Position } from '@element-plus/icons-vue'
 import Record from '@/components/record/Record.vue'
 import { get } from '@/utils/request'
-import AreaHeader from "@/components/AreaHeader.vue";
+import AreaHeader from "@/components/AreaHeader.vue"
 
 const emit = defineEmits(['new-chat', 'add-chat'])
 
