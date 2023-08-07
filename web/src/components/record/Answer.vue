@@ -59,6 +59,7 @@ onMounted(() => {
     >
       <el-button :icon="DocumentCopy"
                  plain @click="copyAnswer"
+                 size="small"
                  style="margin-left: 5px"
       />
     </el-tooltip>
