@@ -13,6 +13,7 @@ const router = useRouter()
 
 
 const clickHistory = (item, isNew) => {
+  router.push(`/chat/${item.id}`)
   chatRef.value.onHistorySwitch(item, isNew)
 }
 

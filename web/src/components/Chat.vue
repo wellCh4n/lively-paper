@@ -1,9 +1,10 @@
 <script setup>
-import { reactive, onMounted, ref, watch, defineExpose, nextTick } from 'vue'
+import { reactive, ref, watch, defineExpose, nextTick, getCurrentInstance } from 'vue'
 import { Position } from '@element-plus/icons-vue'
 import Record from '@/components/record/Record.vue'
 import { get } from '@/utils/request'
 import AreaHeader from "@/components/AreaHeader.vue"
+import {matchMagic} from "@/components/magic/magic"
 
 const emit = defineEmits(['new-chat', 'add-chat'])
 
@@ -16,6 +17,8 @@ const recordRef = ref()
 const currentRecord = ref('')
 const promptInput = ref()
 const inputDisable = ref(false)
+const instance = getCurrentInstance()
+const activatedMagic = ref()
 
 const submit = () => {
   if (form.prompt === '') {
@@ -23,6 +26,12 @@ const submit = () => {
   }
   if (inputDisable.value) {
     return
+  }
+  if (activatedMagic.value) {
+    activatedMagic.value.fn(instance)
+    activatedMagic.value = null
+    form.prompt = ''
+    return;
   }
   inputDisable.value = true
   const prompt = form.prompt
@@ -68,9 +77,11 @@ const recordsViewToBottom = () => {
 }
 
 watch(() => form.prompt, (current, _) => {
-  if (current && current.startsWith('/') && current.length === 1) {
-    console.log('触发魔法')
+  if (current && current.startsWith('/')) {
+    const magic = matchMagic(current)
+    if (magic) activatedMagic.value = {fn: magic.fn}
   }
+  return true
 })
 
 const onHistorySwitch = (item, isNew) => {

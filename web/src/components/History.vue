@@ -26,7 +26,6 @@ const onNewChat = () => {
 const addHistory = (item) => {
   histories.value.push(item)
   activeIndex.value = item.id
-  router.push(`/chat/${item.id}`)
 }
 
 const deleteHistory = (item) => {
@@ -36,6 +35,10 @@ const deleteHistory = (item) => {
 }
 
 onMounted(() => {
+  const id = router.currentRoute.value.params.id
+  if (id) {
+    activeIndex.value = id
+  }
   get('/chat/histories').then((res) => {
     histories.value = res.map((item) => {
       return {
