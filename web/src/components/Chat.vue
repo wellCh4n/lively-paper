@@ -4,7 +4,7 @@ import { Position } from '@element-plus/icons-vue'
 import Record from '@/components/record/Record.vue'
 import { get } from '@/utils/request'
 import AreaHeader from "@/components/AreaHeader.vue"
-import {matchMagic} from "@/components/magic/magic"
+import {matchMagic, parseParams} from "@/components/magic/magic"
 
 const emit = defineEmits(['new-chat', 'add-chat'])
 
@@ -19,16 +19,27 @@ const promptInput = ref()
 const inputDisable = ref(false)
 const instance = getCurrentInstance()
 const activatedMagic = ref()
+const magicFunctions = ref([])
+const magicDrawerShow = ref(false)
+const magicDrawerInner = ref()
 
 const submit = () => {
   if (form.prompt === '' || inputDisable.value) {
     return
   }
   if (activatedMagic.value) {
-    activatedMagic.value.fn(instance)
-    activatedMagic.value = null
+    const magicObject = activatedMagic.value
+    const params = parseParams(form.prompt, magicObject.paramKeys)
     form.prompt = ''
+    magicObject.ready(instance, params)
+    activatedMagic.value = null
+    magicFunctions.value.push({fn: magicObject.submit, params: params})
     return;
+  }
+  const context = []
+  if (magicFunctions) {
+    magicFunctions.value.forEach((func) => func.fn(instance, func.params, context))
+    magicFunctions.value = []
   }
   inputDisable.value = true
   const prompt = form.prompt
@@ -72,7 +83,10 @@ const recordsViewToBottom = () => {
 watch(() => form.prompt, (current, _) => {
   if (current && current.startsWith('/')) {
     const magic = matchMagic(current)
-    if (magic) activatedMagic.value = {fn: magic.fn}
+    if (magic) activatedMagic.value = magic;
+    nextTick(() => {
+      console.log(document.getElementById('magicDrawerInner'))
+    })
   }
   return true
 })
@@ -97,14 +111,25 @@ const onHistorySwitch = (item, isNew) => {
   promptInput.value.focus()
 }
 
+const setDrawerShow = (show) => {
+  magicDrawerShow.value = show
+}
+
+const getDrawerInner = () => {
+  return magicDrawerInner
+}
+
 defineExpose({
-  onHistorySwitch
+  onHistorySwitch, setDrawerShow, getDrawerInner
 })
 
 </script>
 
 <template>
   <div class="chat-wrapper">
+    <el-drawer ref="magicDrawer" v-model="magicDrawerShow" direction="ttb" size="50%">
+      <div ref="magicDrawerInner"></div>
+    </el-drawer>
     <AreaHeader :title="currentRecord.title ? currentRecord.title : 'Lively Paper'" style="margin-top: 5px"/>
     <el-scrollbar style="width: 100%;  margin-bottom: 90px; border-bottom: solid 1px var(--el-border-color);"
                   ref="recordsRef">

@@ -37,7 +37,7 @@ def chat(request: HttpRequest) -> HttpResponseBase:
     if mode == 'streaming':
         queue = SimpleQueue()
         callback = ResponseCallback(queue)
-        thread = Thread(target=qa, kwargs={'inputs': {'question': query},
+        thread = Thread(target=qa, kwargs={'inputs': {'question': query, 'custom_docs': []},
                                            'callbacks': [StreamingStdOutCallbackHandler(), callback]})
         thread.start()
 

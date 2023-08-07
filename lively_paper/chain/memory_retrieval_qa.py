@@ -1,12 +1,14 @@
 import inspect
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 
 from langchain.callbacks.manager import CallbackManagerForChainRun
 from langchain.chains import ConversationalRetrievalChain
 from langchain.chains.conversational_retrieval.base import _get_chat_history
+from langchain.schema import Document
 
 
 class MemoryRetrievalQA(ConversationalRetrievalChain):
+
     def _call(self, inputs: Dict[str, Any], run_manager: Optional[CallbackManagerForChainRun] = None) -> Dict[str, Any]:
         _run_manager = run_manager or CallbackManagerForChainRun.get_noop_manager()
         question = inputs["question"]
@@ -20,6 +22,7 @@ class MemoryRetrievalQA(ConversationalRetrievalChain):
             docs = self._get_docs(question, inputs, run_manager=_run_manager)
         else:
             docs = self._get_docs(question, inputs)  # type: ignore[call-arg]
+        inputs.pop('custom_docs')
         new_inputs = inputs.copy()
         new_inputs["question"] = question
         new_inputs["chat_history"] = chat_history_str

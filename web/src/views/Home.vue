@@ -6,6 +6,7 @@ import Repository from "@/components/Repository.vue"
 import { postData } from '@/utils/request'
 import {useRouter} from "vue-router";
 import {get} from '@/utils/request'
+import {ElMessage} from "element-plus";
 
 const historyRef = ref()
 const chatRef = ref()
@@ -37,6 +38,8 @@ onMounted(() => {
   if (id) {
     get(`/chat/history/${id}/find`).then((res) => {
       clickHistory({ id, title: res.Title }, false)
+    }).catch((err) => {
+      ElMessage('History is not exists~')
     })
   }
 })
@@ -48,10 +51,10 @@ onMounted(() => {
     <div>
       <History @click-history="clickHistory"
                @new-chat="newChat"
-               style="height: 50vh; background-color: var(--el-color-info-light-9);"
+               style="height: 60vh; background-color: var(--el-color-info-light-9);"
                ref="historyRef"
       />
-      <Repository style="height: 50vh; background-color: var(--el-color-info-light-9)"/>
+      <Repository style="height: 40vh; background-color: var(--el-color-info-light-9)"/>
     </div>
     <Chat @new-chat="newChat"
           @add-chat="addChat"

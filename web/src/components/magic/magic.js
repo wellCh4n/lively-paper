@@ -1,24 +1,58 @@
+import {ElMessage} from 'element-plus'
+import {nextTick} from 'vue'
+import {postData} from '@/utils/request'
+
 const magic = {
   new: {
-    fn: (that) => {
+    ready: (that) => {
       that.emit('new-chat', '')
+      ElMessage({ message: 'Create a new Chat~'})
     },
+    submit: () => {},
     name: 'New Chat',
     description: 'New Chat',
-    params: ['title']
+    paramKeys: ['title'],
   },
-  upload: {
-    fn: (that) => {
-      console.log('上传文件')
-    },
+  file: {
+    ready: (that) => {},
+    submit: () => {},
     name: 'Upload File',
     description: 'Upload File To Repository',
-    params: ['file']
+    paramKeys: ['file']
+  },
+  url: {
+    ready: (that, params) => {
+      that.exposed.setDrawerShow(true)
+      nextTick(() => {
+        that.exposed.getDrawerInner().value.innerHTML = ''
+        postData('/file/url', {
+          url: params.url
+        }).then((res) => {
+          that.exposed.getDrawerInner().value.innerHTML = `<p>${res[0].page_content}</p>`
+        })
+      })
+    },
+    submit: (that, params, context) => {
+      console.log(params)
+    },
+    name: 'Fetch content from URL',
+    description: 'Fetch content from URL',
+    paramKeys: ['url']
   }
 }
 
 const inputClean = (that) => {
   that.refs.promptInput.clear()
+}
+
+const parseParams = (prompt, paramKeys) => {
+  const promptCommand = prompt.split(' ')
+  const commandArr = promptCommand.slice(1, promptCommand.length)
+  const param = {}
+  paramKeys.forEach((key, index) => {
+    param[key] = commandArr[index]
+  })
+  return param
 }
 
 const matchMagic = (prompt) => {
@@ -30,5 +64,5 @@ const matchMagic = (prompt) => {
 }
 
 export {
-  magic, matchMagic
+  magic, matchMagic, parseParams
 }

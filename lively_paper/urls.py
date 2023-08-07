@@ -29,7 +29,10 @@ urlpatterns = [
     path('chat/history/<str:session_id>/delete', lively_paper.views.chat.delete_history),
     path('chat/history/<str:session_id>/find', lively_paper.views.chat.find_history),
     path('chat/new', lively_paper.views.chat.new_chat),
+
     path('file', lively_paper.views.file.upload),
+    path('file/url', lively_paper.views.file.fetch_url),
+
     path('admin', admin.site.urls),
 
     re_path(r'^component/.*', lively_paper.views.index.static),

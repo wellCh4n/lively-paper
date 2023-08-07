@@ -1,10 +1,13 @@
+import json
+
 from django.core.files import File
 from django.http import HttpRequest, HttpResponse
 from django.views.decorators.http import require_POST, require_GET
-from langchain.document_loaders import PyPDFLoader
+from langchain.document_loaders import PyPDFLoader, WebBaseLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 from lively_paper.vector import stores
+from lively_paper.views.json_response import JsonObjectResponse
 
 
 @require_POST
@@ -28,6 +31,14 @@ def upload(request: HttpRequest) -> HttpResponse:
     documents = text_splitter.split_documents(pages)
     stores.vector_store.add_documents(documents)
     return HttpResponse('保存成功')
+
+
+@require_POST
+def fetch_url(request: HttpRequest) -> JsonObjectResponse:
+    data = json.loads(request.body)
+    url = data['url']
+    docs = WebBaseLoader(web_path=[url]).load()
+    return JsonObjectResponse(docs, safe=False)
 
 
 @require_GET
