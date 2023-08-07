@@ -13,6 +13,7 @@ const form = reactive({
 })
 const records = ref([])
 const currentRecord = ref('')
+const promptInput = ref()
 const inputDisable = ref(false)
 
 const submit = () => {
@@ -94,6 +95,7 @@ const onHistorySwitch = (item, isNew) => {
       records.value = res
     })
   }
+  promptInput.value.focus()
 }
 
 defineExpose({
@@ -124,7 +126,10 @@ defineExpose({
       <el-form-item style="margin-bottom: 0; background-color: var(--el-color-info-light-9)">
         <el-input autofocus
                   v-model="form.prompt"
-                  style="height: 50px; box-shadow: var(--el-box-shadow); margin: 0 2rem">
+                  placeholder="Send a message"
+                  style="height: 50px; box-shadow: var(--el-box-shadow); margin: 0 2rem"
+                  ref="promptInput"
+        >
           <template #append>
             <el-button :icon="Position"
                        @click="submit"

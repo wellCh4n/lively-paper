@@ -1,5 +1,5 @@
 <script setup>
-import {Plus, Delete} from '@element-plus/icons-vue'
+import {Plus, Delete, WarningFilled} from '@element-plus/icons-vue'
 import {defineExpose, onMounted, ref} from 'vue'
 import {get} from '@/utils/request'
 import AreaHeader from '@/components/AreaHeader.vue'
@@ -75,6 +75,11 @@ defineExpose({
             <el-popconfirm :title="`Delete conversation?`"
                            @confirm="deleteHistory(item)"
                            width="200px"
+                           :hide-after="0"
+                           confirm-button-text="Delete"
+                           :icon="WarningFilled"
+                           icon-color="#F56C6C"
+                           cancel-button-text="Cancel"
                            confirm-button-type="danger"
             >
               <template #reference>
