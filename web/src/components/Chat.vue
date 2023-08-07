@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, onMounted, ref, watch, defineExpose } from 'vue'
+import { reactive, onMounted, ref, watch, defineExpose, nextTick } from 'vue'
 import { Position } from '@element-plus/icons-vue'
 import Record from '@/components/record/Record.vue'
 import { get } from '@/utils/request'
@@ -7,11 +7,12 @@ import AreaHeader from "@/components/AreaHeader.vue"
 
 const emit = defineEmits(['new-chat', 'add-chat'])
 
-const recordsView = ref()
+const recordsRef = ref()
 const form = reactive({
   prompt: ''
 })
 const records = ref([])
+const recordRef = ref()
 const currentRecord = ref('')
 const promptInput = ref()
 const inputDisable = ref(false)
@@ -60,23 +61,16 @@ const submit = () => {
 }
 
 const recordsViewToBottom = () => {
-  const height = recordsView.value.wrapRef.scrollHeight
-  recordsView.value.setScrollTop(height)
+  nextTick(() => {
+    const height = recordRef.value.clientHeight
+    recordsRef.value.setScrollTop(height)
+  })
 }
-
-onMounted(() => {
-  recordsViewToBottom()
-})
 
 watch(() => form.prompt, (current, _) => {
   if (current && current.startsWith('/') && current.length === 1) {
     console.log('触发魔法')
   }
-})
-
-watch(() => records.value.length, () => {
-  recordsViewToBottom()
-  return true
 })
 
 const onHistorySwitch = (item, isNew) => {
@@ -93,6 +87,7 @@ const onHistorySwitch = (item, isNew) => {
     records.value = []
     get(`/chat/history/${item.id}`).then((res) => {
       records.value = res
+      recordsViewToBottom()
     })
   }
   promptInput.value.focus()
@@ -108,14 +103,16 @@ defineExpose({
   <div class="chat-wrapper">
     <AreaHeader :title="currentRecord.title ? currentRecord.title : 'Lively Paper'" style="margin-top: 5px"/>
     <el-scrollbar style="width: 100%;  margin-bottom: 90px; border-bottom: solid 1px var(--el-border-color);"
-                  ref="recordsView">
-      <Record v-for="item in records"
+                  ref="recordsRef">
+      <div ref="recordRef">
+        <Record v-for="item in records"
               :key="item._id"
               :question="item.question"
               :answer="item.answer"
               :answerCallback="item.answerCallback"
               class="record"
-      />
+        />
+      </div>
     </el-scrollbar>
 
     <el-form @submit.native.prevent
