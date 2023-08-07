@@ -89,7 +89,7 @@ const onHistorySwitch = (item, isNew) => {
     records.value = []
   }
   if (!isNew) {
-    document.title = item.title
+    document.title = `${item.title} - Lively Paper - 跃然纸上`
     records.value = []
     get(`/chat/history/${item.id}`).then((res) => {
       records.value = res
