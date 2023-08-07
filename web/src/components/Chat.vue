@@ -16,10 +16,13 @@ const currentRecord = ref('')
 const inputDisable = ref(false)
 
 const submit = () => {
-  inputDisable.value = true
   if (form.prompt === '') {
     return
   }
+  if (inputDisable.value) {
+    return
+  }
+  inputDisable.value = true
   const prompt = form.prompt
   if (records.value.length === 0) {
     emit('new-chat', prompt)
@@ -120,10 +123,13 @@ defineExpose({
       <el-form-item style="margin-bottom: 0; background-color: var(--el-color-info-light-9)">
         <el-input autofocus
                   v-model="form.prompt"
-                  :disabled="inputDisable"
                   style="height: 50px; box-shadow: var(--el-box-shadow); margin: 0 2rem">
           <template #append>
-            <el-button :icon="Position" />
+            <el-button :icon="Position"
+                       @click="submit"
+                       :disabled="inputDisable"
+                       class="submit-btn"
+            />
           </template>
         </el-input>
       </el-form-item>
@@ -144,5 +150,13 @@ defineExpose({
 }
 .record:last-of-type {
   padding-bottom: 1rem;
+}
+.submit-btn {
+  background-color: var(--el-color-primary) !important;
+  height: 50px;
+  color: #fff !important;
+}
+.submit-btn:hover {
+  background-color: var(--el-color-primary-light-3) !important;
 }
 </style>
