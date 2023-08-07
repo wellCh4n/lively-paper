@@ -21,10 +21,7 @@ const instance = getCurrentInstance()
 const activatedMagic = ref()
 
 const submit = () => {
-  if (form.prompt === '') {
-    return
-  }
-  if (inputDisable.value) {
+  if (form.prompt === '' || inputDisable.value) {
     return
   }
   if (activatedMagic.value) {
@@ -46,14 +43,10 @@ const submit = () => {
       const response = await fetch('http://127.0.0.1:8000/chat', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          query: prompt,
-          mode: 'streaming',
-          id: currentRecord.value.id
-        })
+        body: JSON.stringify({ query: prompt, mode: 'streaming', id: currentRecord.value.id })
       })
       const reader = response.body.getReader()
-      while(true) {
+      while (true) {
         const { done, value } = await reader.read()
         if (done) {
           inputDisable.value = false
