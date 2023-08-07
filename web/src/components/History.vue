@@ -29,7 +29,9 @@ const addHistory = (item) => {
 }
 
 const deleteHistory = (item) => {
-  console.log(item)
+  get(`/chat/history/${item.id}/delete`).then((res) => {
+    histories.value = histories.value.filter((history) => history.id !== item.id)
+  })
 }
 
 onMounted(() => {
@@ -70,13 +72,20 @@ defineExpose({
                       class="history-item">
           <template #title>
             {{ item.title.length > 15 ? `${item.title.slice(0, 15)}...` : item.title }}
-            <el-link type="danger"
-                     :underline="false"
-                     style="position: absolute; right: 0;"
-                     @click.stop="deleteHistory(item)"
+            <el-popconfirm :title="`Delete conversation?`"
+                           @confirm="deleteHistory(item)"
+                           width="200px"
+                           confirm-button-type="danger"
             >
-              <el-icon style="margin-right: 10px"><Delete /></el-icon>
-            </el-link>
+              <template #reference>
+                <el-link :underline="false"
+                         style="position: absolute; right: 0;"
+                         @click.native.stop
+                >
+                  <el-icon class="delete-btn"><Delete /></el-icon>
+                </el-link>
+              </template>
+            </el-popconfirm>
           </template>
         </el-menu-item>
       </el-menu>

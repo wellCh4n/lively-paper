@@ -89,6 +89,7 @@ const onHistorySwitch = (item, isNew) => {
   }
   if (!isNew) {
     document.title = item.title
+    records.value = []
     get(`/chat/history/${item.id}`).then((res) => {
       records.value = res
     })
@@ -107,7 +108,7 @@ defineExpose({
     <el-scrollbar style="width: 100%;  margin-bottom: 90px; border-bottom: solid 1px var(--el-border-color);"
                   ref="recordsView">
       <Record v-for="item in records"
-              :key="item.question"
+              :key="item._id"
               :question="item.question"
               :answer="item.answer"
               :answerCallback="item.answerCallback"
