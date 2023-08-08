@@ -33,8 +33,28 @@ class ClickhousePro(Clickhouse):
 
     def similarity_search_with_relevance_scores(self, query: str, k: int = 4, where_str: Optional[str] = None,
                                                 **kwargs: Any) -> List[Tuple[Document, float]]:
-        docs_and_scores = super().similarity_search_with_relevance_scores(query, k, where_str, **kwargs)
+        q_str = self._build_query_sql(
+            self.embedding_function.embed_query(query), k, where_str
+        )
+        docs_and_dist = [
+            (
+                Document(
+                    page_content=r[self.config.column_map["document"]],
+                    metadata=r[self.config.column_map["metadata"]],
+                ),
+                r["dist"],
+            )
+            for r in self.client.query(q_str).named_results()
+        ]
         relevance_score_fn = self._select_relevance_score_fn()
-        return [(doc, relevance_score_fn(score)) for doc, score in docs_and_scores]
+        docs_and_similarities = [(doc, relevance_score_fn(score)) for doc, score in docs_and_dist]
+        score_threshold = kwargs.pop("score_threshold", None)
+        if score_threshold is not None:
+            docs_and_similarities = [
+                (doc, similarity)
+                for doc, similarity in docs_and_similarities
+                if similarity >= score_threshold
+            ]
+        return docs_and_similarities
 
 
