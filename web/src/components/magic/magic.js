@@ -6,22 +6,26 @@ const magic = {
   new: {
     ready: (that) => {
       that.emit('new-chat', '')
-      ElMessage({ message: 'Create a new Chat~'})
+      ElMessage({message: 'Create a new Chat~'})
     },
-    submit: () => {},
     name: 'New Chat',
     description: 'New Chat',
     paramKeys: ['title'],
+    clear: true
   },
   file: {
     ready: (that) => {},
-    submit: () => {},
     name: 'Upload File',
     description: 'Upload File To Repository',
-    paramKeys: ['file']
+    paramKeys: ['file'],
+    clear: false
   },
   url: {
-    ready: (that, params) => {
+    ready: (that, params, event) => {
+      if ((!params.preview || params.preview === 'false') && !event) {
+        return
+      }
+
       that.exposed.setDrawerShow(true)
       nextTick(() => {
         that.exposed.getDrawerInner().value.innerHTML = ''
@@ -32,17 +36,18 @@ const magic = {
         })
       })
     },
-    submit: (that, params, context) => {
-      console.log(params)
-    },
     name: 'Fetch content from URL',
     description: 'Fetch content from URL',
-    paramKeys: ['url']
+    paramKeys: ['url', 'preview'],
+    clear: false
+  },
+  clear: {
+    ready: (that, params) => {},
+    name: 'New Chat',
+    description: 'New Chat',
+    paramKeys: [],
+    clear: true
   }
-}
-
-const inputClean = (that) => {
-  that.refs.promptInput.clear()
 }
 
 const parseParams = (prompt, paramKeys) => {
@@ -59,6 +64,7 @@ const matchMagic = (prompt) => {
   const magicKey = prompt.slice(1, prompt.length)
   const magicObject = magic[magicKey]
   if (magicObject) {
+    magicObject['key'] = magicKey
     return magicObject
   }
 }

@@ -1,5 +1,3 @@
-import {ElMessage} from "element-plus";
-
 const BASE_URL = 'http://127.0.0.1:8000'
 
 const get = (path) => {
@@ -28,6 +26,14 @@ const postForm = (path, form) => {
   })
 }
 
+const postStream = async (path, data) => {
+  return fetch(BASE_URL + path, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: {'Content-Type': 'application/json'},
+  })
+}
+
 export {
-  get, postData
+  get, postData, postStream
 }
