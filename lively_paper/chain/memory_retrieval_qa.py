@@ -22,7 +22,8 @@ class MemoryRetrievalQA(ConversationalRetrievalChain):
             docs = self._get_docs(question, inputs, run_manager=_run_manager)
         else:
             docs = self._get_docs(question, inputs)  # type: ignore[call-arg]
-        inputs.pop('custom_docs')
+        custom_docs = inputs.pop('custom_docs')
+        docs = docs + custom_docs
         new_inputs = inputs.copy()
         new_inputs["question"] = question
         new_inputs["chat_history"] = chat_history_str

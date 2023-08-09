@@ -50,7 +50,8 @@ const submit = () => {
       const response = await postStream('/chat', {
         query: prompt,
         mode: 'streaming',
-        id: currentRecord.value.id
+        id: currentRecord.value.id,
+        functions: form.functions
       })
       const reader = response.body.getReader()
       while (true) {

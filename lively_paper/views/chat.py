@@ -13,6 +13,7 @@ from lively_paper.chain.memory_retrieval_qa import MemoryRetrievalQA
 from lively_paper.chain.prompt import PROMPT
 from lively_paper.model.llms import openai
 from lively_paper.scalar.stores import scalar_store
+from lively_paper.service.magic import execute_functions
 from lively_paper.vector.stores import vector_store
 from lively_paper.views.json_response import JsonObjectResponse
 from lively_paper.views.response_callback import ResponseCallback, job_done
@@ -24,6 +25,7 @@ def chat(request: HttpRequest) -> HttpResponseBase:
     query: str = data['query']
     mode: str = data.get('mode', 'streaming')
     session_id: str = data['id']
+    functions = data.get('functions', [])
 
     chat_memory: BaseChatMessageHistory = MongoDBChatMessageHistory(connection_string=scalar_store.connection,
                                                                     session_id=session_id)
@@ -35,9 +37,10 @@ def chat(request: HttpRequest) -> HttpResponseBase:
                                         search_kwargs={'score_threshold': 0.8, 'k': 5}),
                                     combine_docs_chain_kwargs={'prompt': PROMPT})
     if mode == 'streaming':
+        custom_docs = execute_functions(functions)
         queue = SimpleQueue()
         callback = ResponseCallback(queue)
-        thread = Thread(target=qa, kwargs={'inputs': {'question': query, 'custom_docs': []},
+        thread = Thread(target=qa, kwargs={'inputs': {'question': query, 'custom_docs': custom_docs},
                                            'callbacks': [StreamingStdOutCallbackHandler(), callback]})
         thread.start()
 
