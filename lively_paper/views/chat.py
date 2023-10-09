@@ -34,8 +34,9 @@ def chat(request: HttpRequest) -> HttpResponseBase:
     qa = MemoryRetrievalQA.from_llm(llm=openai, chain_type="stuff", memory=memory, return_source_documents=True,
                                     retriever=vector_store.as_retriever(
                                         search_type='similarity_score_threshold',
-                                        search_kwargs={'score_threshold': 0.8, 'k': 5}),
-                                    combine_docs_chain_kwargs={'prompt': PROMPT})
+                                        search_kwargs={'score_threshold': 0.5, 'k': 5}),
+                                    combine_docs_chain_kwargs={'prompt': PROMPT},
+                                    metadata={'1': '1'})
     if mode == 'streaming':
         custom_docs = execute_functions(functions)
         queue = SimpleQueue()

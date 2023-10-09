@@ -91,11 +91,11 @@ const onHistorySwitch = (item, isNew) => {
   currentRecord.value = item
   form.functions = []
   if (isNew) {
-    document.title = 'Lively Paper - 跃然纸上'
+    document.title = '基于大语言模型的泛农业知识库问答'
     records.value = []
   }
   if (!isNew) {
-    document.title = `${item.title} - Lively Paper - 跃然纸上`
+    document.title = `${item.title} - 基于大语言模型的泛农业知识库问答`
     records.value = []
     get(`/chat/history/${item.id}`).then((res) => {
       records.value = res
@@ -125,7 +125,7 @@ defineExpose({
       <div ref="magicDrawerInner"></div>
     </el-drawer>
 
-    <AreaHeader :title="currentRecord.title ? currentRecord.title : 'Lively Paper'" style="margin-top: 5px"/>
+    <AreaHeader :title="currentRecord.title ? currentRecord.title : '基于大模型的泛农业知识库问答'" style="margin-top: 5px"/>
     <el-scrollbar style="width: 100%;  margin-bottom: 90px; border-bottom: solid 1px var(--el-border-color);"
                   ref="recordsRef">
       <div ref="recordRef">

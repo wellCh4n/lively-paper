@@ -3,9 +3,10 @@ import json
 from django.core.files import File
 from django.http import HttpRequest, HttpResponse
 from django.views.decorators.http import require_POST, require_GET
-from langchain.document_loaders import PyPDFLoader, WebBaseLoader
+from langchain.document_loaders import PyPDFium2Loader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
+from lively_paper.service.magic import magic
 from lively_paper.vector import stores
 from lively_paper.views.json_response import JsonObjectResponse
 
@@ -19,7 +20,7 @@ def upload(request: HttpRequest) -> HttpResponse:
     with open(tmp_file_path, 'wb+') as destination:
         for chunks in file.chunks():
             destination.write(chunks)
-    pdf_loader = PyPDFLoader(tmp_file_path)
+    pdf_loader = PyPDFium2Loader(tmp_file_path)
     pages = pdf_loader.load()
 
     text_splitter = RecursiveCharacterTextSplitter(
@@ -36,8 +37,7 @@ def upload(request: HttpRequest) -> HttpResponse:
 @require_POST
 def fetch_url(request: HttpRequest) -> JsonObjectResponse:
     data = json.loads(request.body)
-    url = data['url']
-    docs = WebBaseLoader(web_path=[url]).load()
+    docs = magic['url'](data)
     return JsonObjectResponse(docs, safe=False)
 
 

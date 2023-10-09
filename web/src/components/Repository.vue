@@ -31,7 +31,7 @@ const cancel = (files) => {
 <template>
   <div style="width: 300px; border-radius: var(--el-border-radius-base)">
     <AreaHeader title="Repository" />
-    <el-upload style="width: 100%; display: inline-grid;"
+    <el-upload style=""
                :http-request="upload"
                :multiple="false"
                :on-exceed="cancel"
@@ -39,7 +39,7 @@ const cancel = (files) => {
                ref="uploader"
                class="uploader">
       <el-button type="primary"
-                 style="width: 100%; margin: 5px 5px"
+                 style="width: 290px; margin: 5px 5px;"
                  size="large"
                  :icon="Upload">
         Click to upload file

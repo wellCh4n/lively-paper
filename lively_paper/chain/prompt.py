@@ -4,10 +4,10 @@ DEFAULT_TEMPLATE = """
 Current conversation:
 {chat_history}
 
-Context:
+Reference:
 {context}
 
-Question: {question}
+Question: 在农村，{question}
 Helpful Answer:
 """
 
